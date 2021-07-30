@@ -14,6 +14,8 @@ from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view
 from api.serializers import *
+from rest_framework import permissions
+from rest_framework.decorators import api_view, permission_classes
 
 @csrf_exempt
 def login(request):
@@ -90,14 +92,14 @@ class Blog(APIView):
         except ObjectDoesNotExist:
             raise Http404
 
-    def get(self, request, pk, format=None):
-        snippet = self.get_object(pk)
-        serializer = PostSerializer(snippet)
-        context = {
-            'message' : "Success!",
-            'data' : serializer.data
-        }
-        return JsonResponse(context,safe=False, status=status.HTTP_200_OK)
+    # def get(self, request, pk, format=None):
+    #     snippet = self.get_object(pk)
+    #     serializer = PostSerializer(snippet)
+    #     context = {
+    #         'message' : "Success!",
+    #         'data' : serializer.data
+    #     }
+    #     return JsonResponse(context,safe=False, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
         payload = {
@@ -140,7 +142,27 @@ class Blog(APIView):
         else:
             return Response({"message":"Only the author can delete this post"},status=status.HTTP_403_FORBIDDEN)
 
+
+class BlogPublic(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    def get_object(self, pk):
+        try:
+            post = Post.objects.get(Q(pk=pk))
+            return post
+        except ObjectDoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = PostSerializer(snippet)
+        context = {
+            'message' : "Success!",
+            'data' : serializer.data
+        }
+        return JsonResponse(context,safe=False, status=status.HTTP_200_OK)
+
 class Blogs(ListAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
     def get_queryset(self):
         posts = Post.objects.all().order_by('-id')

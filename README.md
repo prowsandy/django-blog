@@ -1,4 +1,4 @@
-## Linux Ubuntu setup
+﻿## Linux Ubuntu setup
 
     sudo apt-get update
     sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl
@@ -118,7 +118,7 @@ Seed data by browsing:
 #### 8. Retrieve Single Post
 
     HTTP Method: GET 
-    URL: api/post/:id
+    URL: api/posts/:id
 #### 9. Create Comment
 
     HTTP Method: POST 
@@ -136,4 +136,3 @@ Seed data by browsing:
 
     HTTP Method: GET 
     URL: api/posts/:post_id/comments
-
